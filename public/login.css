@@ -4,11 +4,7 @@ body {
   overflow: hidden;
   justify-content: center;
   align-items: center;
-  background: linear-gradient(
-    106deg,
-    rgba(15, 15, 15, 0.3) 3.63%,
-    rgba(230, 0, 126, 0.2) 100%
-  );
+  background: #151515;
   color: white;
   font-family: "Poppins", sans-serif;
   font-style: normal;

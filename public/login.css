@@ -56,6 +56,7 @@ main {
   border-radius: 5px;
   border: 1px solid #0d0d0d;
   background: #151515;
+  color: white;
 }
 
 .box-login-button {
@@ -74,6 +75,7 @@ main {
   border-radius: 5px;
   border: 1px solid #e6007e;
   background: #e6007e;
+  cursor: pointer;
 }
 .box-login-button p{
     font-size: 12px;

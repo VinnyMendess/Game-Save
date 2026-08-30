@@ -91,35 +91,35 @@
         var nameTagValue = nameTag.value;
         var emailValue = email.value;
         var senhaValue = senha.value;
-        var confirmarSenhaValue = confirmacaoSenha.vaue
+        var confirmarSenhaValue = confirmacaoSenha.value
 
         console.log("Nome de usuário:", nameTagValue);
         console.log("Email:", emailValue);
         console.log("Senha:", senhaValue);
 
-        // if (
-        //   nameTagValue == "" ||
-        //   emailValue == "" ||
-        //   senhaValue == "" ||
-        //   confirmarSenhaValue == "" ||
-        //   confirmarSenhaValue != senhaValue
-        // ) {
-        //   textoError.style.display = "block";
-        //   return;
-        // }
+        if (
+          nameTagValue == "" ||
+          emailValue == "" ||
+          senhaValue == "" ||
+          confirmarSenhaValue == "" ||
+          confirmarSenhaValue != senhaValue
+        ) {
+          textoError.style.display = "block";
+          return;
+        }
 
         fetch("http://localhost:8080/usuarios/cadastrar", {
           method: "POST",
           
           body: JSON.stringify({
-            nameTagServer: nameTagValue,
-            emailServer: emailValue,
-            senhaServer: senhaValue,
+            nameTag: nameTagValue,
+            email: emailValue,
+            senha: senhaValue,
           }),
           headers: { "Content-Type": "application/json" }
         })
           .then((resposta) => {
-            if (resposta.status ===  200) {
+            if (resposta.status ===  201) {
               return resposta.json();
             } else {
               textoError.style.display = "block";
@@ -134,6 +134,7 @@
         nameTag.value = "";
         email.value = "";
         senha.value = "";
+        confirmacaoSenha.value = "";
       }
     </script>
   </body>

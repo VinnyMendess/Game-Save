@@ -76,11 +76,11 @@
           </div>
           <div class="input">
             <label>HORAS JOGADAS</label>
-            <input type="number" placeholder="0" />
+            <input type="number" placeholder="0" id="horasJogadas" />
           </div>
           <div class="input">
             <label>DATA DE CONCLUSÃO</label>
-            <input type="date" />
+            <input type="date" id="dataConclusao" />
           </div>
         </div>
 
@@ -114,6 +114,7 @@
               max="10"
               placeholder="0-10"
               style="width: 120px"
+              id="nota"
             />
           </div>
         </div>
@@ -145,7 +146,9 @@
 
           <div class="action-buttons">
             <button class="btn-cancelar">CANCELAR</button>
-            <button class="btn-salvar">SALVAR JOGO</button>
+            <button class="btn-salvar" onclick="enviarJogo()">
+              SALVAR JOGO
+            </button>
           </div>
         </div>
       </div>
@@ -258,13 +261,12 @@
 
           const imagem =
             jogo.background_image || "caminho/para/imagem/padrao.jpg";
-          
 
           li.innerHTML = `
-            <img src="${imagem}" alt="${jogo.name}">
-            <div>
-                <strong>${jogo.name}</strong>
-        `;
+                  <img src="${imagem}" alt="${jogo.name}">
+                  <div>
+                      <strong>${jogo.name}</strong>
+              `;
           li.addEventListener("click", () => {
             inputBusca.value = jogo.name;
             listaResultados.style.display = "none";
@@ -272,6 +274,49 @@
           });
           listaResultados.appendChild(li);
         });
+      }
+      async function enviarJogo() {
+        let horasJogadas = getElementById("horasJogadas");
+        let dataConclusao = getElementById("dataConclusao");
+        let plataforma = getElementById("plataforma");
+        let statuss = getElementById("status");
+        let nota = getElementById("nota");
+        let midia = getElementById("digital");
+        let curtir = getElementById("curtir");
+        let dadosDoJogo = {
+          inputTitulo,
+          game_id,
+          horasJogadas,
+          statuss,
+          dataConclusao,
+          plataforma,
+          nota,
+          midia,
+          favorito,
+          idUsuario,
+        };
+
+        try {
+          const resposta = await fetch("http://localhost:3000/api/jogos", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify(dadosDoJogo),
+          });
+
+          if (!resposta.ok) {
+            throw new Error("Erro ao salvar o jogo no servidor.");
+          }
+
+          const resultado = await resposta.json();
+          console.log("Jogo salvo com sucesso!", resultado);
+          alert("Jogo salvo com sucesso!");
+
+        } catch (erro) {
+          console.error("Erro na requisição de salvamento:", erro);
+          alert("Não foi possível salvar o jogo.");
+        }
       }
     </script>
   </body>

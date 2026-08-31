@@ -60,22 +60,23 @@
 
         <div class="box-input">
           <p>Senha</p>
-          <input type="text" id="senha" />
+          <input type="password" id="senha" />
         </div>
         <div class="box-input">
           <p>Confirmar Senha</p>
-          <input type="text"  id="confirmarSenha" />
+          <input type="password"  id="confirmarSenha" />
         </div>
         <div
           id="textError"
           style="display: none; color: red; font-size: 14px; margin-top: 10px"
         >
-          <p>Email ou senha inválidos</p>
+          <p>A senha deve conter caracteres maiúsculos, minúsculos, especiais e números</p>
         </div>
+  
         <div class="box-login-button">
           <button onclick="cadastrar()">Entrar</button>
 
-          <p>Já tem conta? <a href="login.html">Cadastre-se</a></p>
+          <p>Já tem conta? <a href="login.html">Login</a></p>
         </div>
       </div>
     </main>
@@ -88,10 +89,13 @@
       var textoError = document.getElementById("textError")
 
       function cadastrar() {
-        var nameTagValue = nameTag.value;
-        var emailValue = email.value;
-        var senhaValue = senha.value;
-        var confirmarSenhaValue = confirmacaoSenha.value
+        let nameTagValue = nameTag.value;
+        let emailValue = email.value;
+        let senhaValue = senha.value;
+        let confirmarSenhaValue = confirmacaoSenha.value
+
+        const regexEmail = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        const regexSenha = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
 
         console.log("Nome de usuário:", nameTagValue);
         console.log("Email:", emailValue);
@@ -101,11 +105,13 @@
           nameTagValue == "" ||
           emailValue == "" ||
           senhaValue == "" ||
-          confirmarSenhaValue == "" ||
-          confirmarSenhaValue != senhaValue
+          confirmarSenhaValue == "" || confirmarSenhaValue != senhaValue ||
+          !regexEmail.test(emailValue)||
+          !regexSenha.test(senhaValue)
+          
         ) {
           textoError.style.display = "block";
-          return;
+          return false;
         }
 
         fetch("http://localhost:8080/usuarios/cadastrar", {

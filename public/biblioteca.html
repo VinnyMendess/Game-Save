@@ -56,7 +56,6 @@
     </header>
 
     <main>
-      <!-- Modal / Sessão de Adicionar Novo Jogo -->
       <div class="add-game-container">
         <div class="header-form">
           <div class="title">NOVO JOGO</div>
@@ -64,9 +63,16 @@
         </div>
 
         <div class="box-input-group">
-          <div class="input fluid">
+          <div class="input fluid" style="position: relative">
             <label>TÍTULO DO JOGO</label>
-            <input type="text" placeholder="ex: Elden Ring" />
+            <input
+              type="text"
+              id="buscaJogo"
+              placeholder="ex: Elden Ring"
+              autocomplete="off"
+            />
+
+            <ul id="listaResultados" class="dropdown-resultados"></ul>
           </div>
           <div class="input">
             <label>HORAS JOGADAS</label>
@@ -91,6 +97,28 @@
               <option value="PC">PC</option>
             </select>
           </div>
+          <div class="input fluid">
+            <label>STATUS</label>
+            <select name="status" id="status">
+              <option value="" disabled selected>Estado do jogo...</option>
+              <option value="jogando">Jogando</option>
+              <option value="zerado">Zerado</option>
+              <option value="desejos">Lista de Desejos</option>
+            </select>
+          </div>
+          <div class="input">
+            <label>NOTA</label>
+            <input
+              type="number"
+              min="0"
+              max="10"
+              placeholder="0-10"
+              style="width: 120px"
+            />
+          </div>
+        </div>
+
+        <div class="box-input-group">
           <div class="input radio-group">
             <label>MÍDIA</label>
             <div class="radios">
@@ -107,6 +135,14 @@
               <label for="fisica" class="radio-label">Física</label>
             </div>
           </div>
+
+          <div class="input radio-group">
+            <label>❤️ CURTIR </label>
+            <div class="radios">
+              <input type="checkbox" id="curtir" name="curtir " />
+            </div>
+          </div>
+
           <div class="action-buttons">
             <button class="btn-cancelar">CANCELAR</button>
             <button class="btn-salvar">SALVAR JOGO</button>
@@ -114,7 +150,6 @@
         </div>
       </div>
 
-      <!-- Cabeçalho da Biblioteca -->
       <div class="title-main">
         <div class="title-left">
           <h1>Sua Biblioteca</h1>
@@ -128,7 +163,6 @@
         </div>
       </div>
 
-      <!-- Cards de Informação do Usuário -->
       <div class="info-user">
         <div class="card-info-user">
           <p>TOTAL DE JOGOS</p>
@@ -148,7 +182,6 @@
         </div>
       </div>
 
-      <!-- Lista de Jogos -->
       <div class="info-games">
         <div class="card-info-games">
           <div class="card-header">
@@ -176,5 +209,70 @@
         </div>
       </div>
     </main>
+
+    <script>
+      const inputBusca = document.getElementById("buscaJogo");
+      const listaResultados = document.getElementById("listaResultados");
+      let tempoEspera;
+
+      inputBusca.addEventListener("input", function (evento) {
+        const textoDigitado = evento.target.value;
+
+        clearTimeout(tempoEspera);
+
+        if (textoDigitado.length < 3) {
+          listaResultados.style.display = "none";
+          listaResultados.innerHTML = "";
+          return;
+        }
+        tempoEspera = setTimeout(async () => {
+          await procurarJogoAPI(textoDigitado);
+        }, 500);
+      });
+
+      async function procurarJogoAPI(nome) {
+        try {
+          const RAWG_API_KEY = "1b491793938f447a8a13d3bdd4f36dca";
+          const inputTitulo = document.querySelector("#buscaJogo");
+          const url = `https://api.rawg.io/api/games?key=${RAWG_API_KEY}&search=${nome}&page_size=5`;
+          const resposta = await fetch(url);
+          const dados = await resposta.json();
+
+          mostrarResultados(dados.results);
+        } catch (erro) {
+          console.error("Erro ao prcurar o jg", erro);
+        }
+      }
+
+      function mostrarResultados(jogos) {
+        listaResultados.innerHTML = "";
+        if (jogos.length === 0) {
+          listaResultados.style.display = "none";
+          return;
+        }
+
+        listaResultados.style.display = "block";
+
+        jogos.forEach((jogo) => {
+          const li = document.createElement("li");
+
+          const imagem =
+            jogo.background_image || "caminho/para/imagem/padrao.jpg";
+          
+
+          li.innerHTML = `
+            <img src="${imagem}" alt="${jogo.name}">
+            <div>
+                <strong>${jogo.name}</strong>
+        `;
+          li.addEventListener("click", () => {
+            inputBusca.value = jogo.name;
+            listaResultados.style.display = "none";
+            console.log(jogo.id);
+          });
+          listaResultados.appendChild(li);
+        });
+      }
+    </script>
   </body>
 </html>

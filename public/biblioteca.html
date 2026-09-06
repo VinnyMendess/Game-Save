@@ -262,19 +262,25 @@
         jogos.forEach((jogo) => {
           const li = document.createElement("li");
 
-          imagem = jogo.background_image || "caminho/para/imagem/padrao.jpg";
-          genero = jogo.genero
+         const imagemDropdown = jogo.background_image || "caminho/para/imagem/padrao.jpg";
+          
           li.innerHTML = `
-                  <img src="${imagem}" alt="${jogo.name}">
+                  <img src="${imagemDropdown}" alt="${jogo.name}">
                   <div>
                       <strong>${jogo.name}</strong>
+                  </div>
               `;
+              
           li.addEventListener("click", () => {
             inputBusca.value = jogo.name;
             idJogoSelecionado = jogo.id;
             listaResultados.style.display = "none";
             console.log(jogo.id);
+
+           imagem = jogo.background_image || "caminho/para/imagem/padrao.jpg";
+            genero = jogo.genero;
           });
+          
           listaResultados.appendChild(li);
         });
       }
@@ -307,7 +313,7 @@
           nota: nota ? Number(nota) : null,
           favorito: favorito,
           genero: "RPG",
-          imagem: imagem
+          imagem: imagem,
         };
 
         try {
@@ -330,6 +336,7 @@
 
           const resultado = await resposta.json();
           console.log("Jogo salvo com sucesso!", resultado);
+          carregarBiblioteca();
           alert("Jogo salvo com sucesso!");
         } catch (erro) {
           console.error("Erro na requisição de salvamento:", erro);
@@ -337,71 +344,68 @@
         }
       }
 
-    async function carregarBiblioteca() {
-  let idUsuario = localStorage.getItem("idUsuario") || 1;
+      async function carregarBiblioteca() {
+        let idUsuario = localStorage.getItem("idUsuario") || 1;
 
-  try {
-    const resposta = await fetch(`http://localhost:8080/jogos/listar/${idUsuario}`);
+        try {
+          const resposta = await fetch(
+            `http://localhost:8080/jogos/listar/${idUsuario}`,
+          );
 
-    if (!resposta.ok) {
-      throw new Error("Erro ao buscar os jogos do usuário.");
-    }
+          if (!resposta.ok) {
+            throw new Error("Erro ao buscar os jogos do usuário.");
+          }
 
-    const jogos = await resposta.json();
-    console.log("Jogos encontrados:", jogos);
-    
-    // Chama a função para desenhar os cards na tela
-    renderizarJogos(jogos);
+          const jogos = await resposta.json();
+          console.log("Jogos encontrados:", jogos);
 
-  } catch (erro) {
-    console.error("Erro na requisição:", erro);
-  }
-}
-
-function renderizarJogos(listaJogos) {
-  const containerJogos = document.querySelector(".info-games");
-  containerJogos.innerHTML = ""; // Limpa os cards estáticos/antigos
-
-  if (listaJogos.length === 0) {
-    containerJogos.innerHTML = "<p style='color: #fff;'>Nenhum jogo cadastrado na biblioteca.</p>";
-    return;
-  }
-
-  listaJogos.forEach(jogo => {
-    // Tratamento para formatar a data (AAAA-MM-DD para DD/MM/AAAA) se ela existir
-    let dataFormatada = "";
-    if (jogo.dataConclusao) {
-      const partes = jogo.dataConclusao.split("-");
-      if (partes.length === 3) {
-        dataFormatada = `${partes[2]}/${partes[1]}/${partes[0]}`;
-      } else {
-        dataFormatada = jogo.dataConclusao;
+          renderizarJogos(jogos);
+        } catch (erro) {
+          console.error("Erro na requisição:", erro);
+        }
       }
-    }
 
-    // Cria a estrutura do card idêntica ao HTML original
-    const card = document.createElement("div");
-    card.classList.add("card-info-games");
+      function renderizarJogos(listaJogos) {
+        const containerJogos = document.querySelector(".info-games");
+        containerJogos.innerHTML = ""; 
 
-    // Se houver imagem salva, usa ela. Senão, usa um placeholder
-    const imagemCapa = jogo.imagem || "caminho/para/imagem/padrao.jpg";
+        if (listaJogos.length === 0) {
+          containerJogos.innerHTML =
+            "<p style='color: #fff;'>Nenhum jogo cadastrado na biblioteca.</p>";
+          return;
+        }
 
-    // Opcional: define um fundo visual com a imagem se quiser dar destaque
-    card.style.backgroundImage = `linear-gradient(to bottom, rgba(0,0,0,0.3), rgba(0,0,0,0.8)), url('${imagemCapa}')`;
-    card.style.backgroundSize = "cover";
-    card.style.backgroundPosition = "center";
+        listaJogos.forEach((jogo) => {
+          let dataFormatada = "-";
+          if (jogo.dataConclusao) {
+            const dataString = jogo.dataConclusao.substring(0, 10);
+            const partes = dataString.split("-");
+            if (partes.length === 3) {
+              dataFormatada = `${partes[2]}/${partes[1]}/${partes[0]}`;
+            }
+          }
 
-    card.innerHTML = `
+          const card = document.createElement("div");
+          card.classList.add("card-info-games");
+
+          
+           const imagemCapa = jogo.imagem || "caminho/para/imagem/padrao.jpg";
+
+          card.style.backgroundImage = `linear-gradient(to bottom, rgba(0,0,0,0.6), rgba(0,0,0,0.85)), url('${imagemCapa}')`;
+          card.style.backgroundSize = "cover";
+          card.style.backgroundPosition = "center";
+
+          card.innerHTML = `
       <div class="card-header">
-        <span class="tag tag-genre">${jogo.genero || "Geral"}</span>
-        ${jogo.favorito ? '<span class="tag tag-plat">❤️ FAV</span>' : ''}
+        <span class="tag tag-genre">${jogo.genero || "RPG"}</span>
+        ${jogo.favorito ? '<span class="tag tag-plat">❤️ FAV</span>' : ""}
       </div>
       <div class="card-body">
         <h2 class="title">${jogo.titulo}</h2>
         <div class="tags-system">
           <span class="tag-sys pc">${jogo.plataforma || "Outros"}</span>
           <span class="tag-sys digital">${jogo.midia || "Digital"}</span>
-          ${jogo.statuss ? `<span class="tag-sys dlc">${jogo.statuss}</span>` : ''}
+          ${jogo.statuss ? `<span class="tag-sys dlc">${jogo.statuss}</span>` : ""}
         </div>
       </div>
       <div class="card-footer">
@@ -411,19 +415,20 @@ function renderizarJogos(listaJogos) {
         </div>
         <div>
           <p>CONCLUÍDO</p>
-          <span>${dataFormatada || "-"}</span>
+          <span>${dataFormatada}</span>
         </div>
       </div>
     `;
 
-    containerJogos.appendChild(card);
-  });
-}
-
-// Executa a função assim que a página termina de carregar
-document.addEventListener("DOMContentLoaded", () => {
-  carregarBiblioteca();
-});
+          containerJogos.appendChild(card);
+          
+        });
+        
+      }
+      document.addEventListener("DOMContentLoaded", () => {
+        carregarBiblioteca();
+      });
+      
     </script>
   </body>
 </html>

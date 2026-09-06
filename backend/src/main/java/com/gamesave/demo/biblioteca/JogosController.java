@@ -88,8 +88,8 @@ public class JogosController {
 
 
 
-                ps.setString(10, jogos.getImagem());
-                ps.setString(11, jogos.getGenero());
+                ps.setString(10, jogos.getGenero());
+                ps.setString(11, jogos.getImagem());
                 return ps;
             }, keyHolder);
 

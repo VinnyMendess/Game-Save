@@ -102,7 +102,7 @@
             <select name="status" id="status">
               <option value="" disabled selected>Estado do jogo...</option>
               <option value="jogando">Jogando</option>
-              <option value="zerado">Zerado</option>
+              <option value="Concluído">Concluído</option>
               <option value="desejos">Lista de Desejos</option>
             </select>
           </div>
@@ -217,6 +217,8 @@
       const inputBusca = document.getElementById("buscaJogo");
       const listaResultados = document.getElementById("listaResultados");
       let tempoEspera;
+      let idJogoSelecionado = null;
+      let imagem = null;
 
       inputBusca.addEventListener("input", function (evento) {
         const textoDigitado = evento.target.value;
@@ -259,8 +261,7 @@
         jogos.forEach((jogo) => {
           const li = document.createElement("li");
 
-          const imagem =
-            jogo.background_image || "caminho/para/imagem/padrao.jpg";
+          imagem = jogo.background_image || "caminho/para/imagem/padrao.jpg";
 
           li.innerHTML = `
                   <img src="${imagem}" alt="${jogo.name}">
@@ -269,6 +270,7 @@
               `;
           li.addEventListener("click", () => {
             inputBusca.value = jogo.name;
+            idJogoSelecionado = jogo.id;
             listaResultados.style.display = "none";
             console.log(jogo.id);
           });
@@ -276,46 +278,80 @@
         });
       }
       async function enviarJogo() {
-        let horasJogadas = getElementById("horasJogadas");
-        let dataConclusao = getElementById("dataConclusao");
-        let plataforma = getElementById("plataforma");
-        let statuss = getElementById("status");
-        let nota = getElementById("nota");
-        let midia = getElementById("digital");
-        let curtir = getElementById("curtir");
+        let titulo = document.getElementById("buscaJogo").value;
+        let horasJogadas = document.getElementById("horasJogadas").value;
+        let dataConclusao = document.getElementById("dataConclusao").value;
+        let plataforma = document.getElementById("plataforma").value;
+        let statuss = document.getElementById("status").value;
+        let nota = document.getElementById("nota").value;
+        let midiaEl = document.querySelector('input[name="midia"]:checked');
+        let midia = midiaEl
+          ? midiaEl.value === "digital"
+            ? "Digital"
+            : "Físico"
+          : "Digital";
+        let favorito = document.getElementById("curtir")
+          ? document.getElementById("curtir").checked
+          : false;
+
+        let idUsuario = localStorage.getItem("idUsuario");
         let dadosDoJogo = {
-          inputTitulo,
-          game_id,
-          horasJogadas,
-          statuss,
-          dataConclusao,
-          plataforma,
-          nota,
-          midia,
-          favorito,
-          idUsuario,
+          idUsuario: idUsuario ? Number(idUsuario) : 1,
+          titulo: titulo,
+          horasJogadas: horasJogadas ? Number(horasJogadas) : null,
+          dataConclusao: dataConclusao !== "" ? dataConclusao : null,
+          plataforma: plataforma,
+          midia: midia,
+          statuss: statuss,
+          nota: nota ? Number(nota) : null,
+          favorito: favorito,
+          genero: "RPG",
         };
 
         try {
-          const resposta = await fetch("http://localhost:3000/api/jogos", {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
+          const resposta = await fetch(
+            "http://localhost:8080/jogos/cadastrar",
+            {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify(dadosDoJogo),
             },
-            body: JSON.stringify(dadosDoJogo),
-          });
+          );
 
           if (!resposta.ok) {
+            const erroTexto = await resposta.text();
+            console.error("Detalhe do erro do servidor:", erroTexto);
             throw new Error("Erro ao salvar o jogo no servidor.");
           }
 
           const resultado = await resposta.json();
           console.log("Jogo salvo com sucesso!", resultado);
           alert("Jogo salvo com sucesso!");
-
         } catch (erro) {
           console.error("Erro na requisição de salvamento:", erro);
           alert("Não foi possível salvar o jogo.");
+        }
+      }
+
+      async function carregarJogos() {
+        let idUsuario = localStorage.getItem("idUsuario") || 1;
+
+        try {
+          const resposta = await fetch(
+            `http://localhost:8080/jogos/listar/${idUsuario}`,
+          );
+
+          if (!resposta.ok) {
+            throw new Error("Erro ao buscar os jogos do usuário.");
+          }
+
+          const jogos = await resposta.json();
+
+          console.log("Jogos encontrados:", jogos);
+        } catch (erro) {
+          console.error("Erro na requisição:", erro);
         }
       }
     </script>

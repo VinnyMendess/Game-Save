@@ -70,6 +70,7 @@
       var senha = document.getElementById("senha");
       
       function logar(){
+        
         let emailValue = email.value;
         let senhaValue = senha.value;
 
@@ -93,6 +94,7 @@
         })
         .then(login => {
           console.log(login)
+          localStorage.setItem('idUsuario', login.idUsuario);
            window.location = "biblioteca.html"
         })
       }

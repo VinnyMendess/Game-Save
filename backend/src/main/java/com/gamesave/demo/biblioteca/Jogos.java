@@ -16,12 +16,14 @@ public class Jogos {
     private Integer nota;
     private Boolean favorito;
     private String genero;
+    private String imagem;
 
 
     public Jogos() {
     }
 
-    public Jogos(Integer idJogos, Integer idUsuario, String titulo, Integer horasJogadas, Date dataConclusao, String plataforma, String midia, String statuss, Integer nota, Boolean favorito, String genero) {
+    public Jogos(Integer idJogos, Integer idUsuario, String titulo, Integer horasJogadas, Date dataConclusao, String plataforma, String midia, String statuss, Integer nota, Boolean favorito, String genero, String imagem
+    ) {
         this.idJogos = idJogos;
         this.idUsuario = idUsuario;
         this.titulo = titulo;
@@ -33,6 +35,7 @@ public class Jogos {
         this.nota = nota;
         this.favorito = favorito;
         this.genero = genero;
+        this.imagem = imagem;
     }
 
     public Integer getIdJogos() {
@@ -125,5 +128,13 @@ public class Jogos {
 
     public void setIdJogos(int idJogos) {
         this.idJogos = idJogos;
+    }
+
+    public String getImagem() {
+        return imagem;
+    }
+
+    public void setImagem(String imagem) {
+        this.imagem = imagem;
     }
 }

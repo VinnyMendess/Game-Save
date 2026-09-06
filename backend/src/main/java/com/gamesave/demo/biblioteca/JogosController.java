@@ -39,12 +39,12 @@ public class JogosController {
             }
             if (jogos.getMidia() != null) {
                 String midiaStr = jogos.getMidia().toLowerCase();
-                if (!midiaStr.equals("físico") && !midiaStr.equals("digital")) {
+                if (!midiaStr.equalsIgnoreCase("físico") && !midiaStr.equalsIgnoreCase("digital")) {
                     return ResponseEntity.status(400).build();
                 }
             }
 
-            String sql = "INSERT INTO bibliotecaJogo (idUsuario, titulo, horasJogadas, dataConclusao, plataforma, midia, statuss, nota, favorito, genero) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?);";
+            String sql = "INSERT INTO bibliotecaJogo (idUsuario, titulo, horasJogadas, dataConclusao, plataforma, midia, statuss, nota, favorito, genero, imagem) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);";
             KeyHolder keyHolder = new GeneratedKeyHolder();
 
             jdbcTemplate.update(con -> {
@@ -86,7 +86,10 @@ public class JogosController {
                     ps.setNull(9, java.sql.Types.BOOLEAN);
                 }
 
-                ps.setString(10, jogos.getGenero());
+
+
+                ps.setString(10, jogos.getImagem());
+                ps.setString(11, jogos.getGenero());
                 return ps;
             }, keyHolder);
 

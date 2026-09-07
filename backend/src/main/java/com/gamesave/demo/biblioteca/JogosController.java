@@ -109,7 +109,7 @@ public class JogosController {
     // Listar jogos por usuário
     @GetMapping("/listar/{idUsuario}")
     public ResponseEntity<List<Jogos>> listarjogos(@PathVariable Integer idUsuario){
-        String sql = "SELECT * FROM bibliotecaJogo WHERE idUsuario = ?";
+        String sql = "SELECT *, idBibliotecaJogo AS idJogos FROM bibliotecaJogo WHERE idUsuario = ?";
 
         try {
             List<Jogos> listaJogos = jdbcTemplate.query(sql,
@@ -125,5 +125,14 @@ public class JogosController {
     public ResponseEntity<List<String>> listarStatus(){
         List<String> statusList = List.of("Jogando", "Concluído", "Lista de Desejos", "Pausado");
         return ResponseEntity.status(200).body(statusList);
+    }
+
+    @PutMapping("/atualizar-status/{idJogo}")
+    public ResponseEntity<Jogos> atualizarStatus(@PathVariable Integer idJogo, @RequestBody Jogos jogoAtualizado){
+        String sql = "UPDATE bibliotecaJogo SET statuss = ? WHERE idBibliotecaJogo = ?";
+
+        jdbcTemplate.update(sql, jogoAtualizado.getStatuss(), idJogo);
+
+        return ResponseEntity.ok().build();
     }
 }

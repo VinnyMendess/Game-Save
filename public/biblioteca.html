@@ -423,7 +423,7 @@
           <span>${jogo.horasJogadas || 0}h</span>
         </div>
         <div>
-          <select class="edit-status">
+          <select class="edit-status" data-id="${jogo.idJogos}">
             <option value="" disabled>Carregando...</option>
           </select>
           <span>${dataFormatada}</span>
@@ -434,14 +434,22 @@
           containerJogos.appendChild(card);
         });
         document.querySelectorAll(".edit-status").forEach((select, index) => {
-          carregarSelectStatus(select, listaJogos[index].statuss);
+          const jogo = listaJogos[index];
+          
+          carregarSelectStatus(select, jogo.statuss);
+
+          select.addEventListener("change", async (event) => {
+            const novoStatus = event.target.value;
+            const idJogo = select.getAttribute("data-id");
+            
+  
+            await atualizarStatusJogo(idJogo, novoStatus);
+          });
         });
-      
       }
       document.addEventListener("DOMContentLoaded", () => {
         carregarBiblioteca();
       });
-
 
       async function carregarSelectStatus(elementoSelect, statusAtual) {
         try {
@@ -452,7 +460,7 @@
 
           elementoSelect.innerHTML = '<option value="" disabled>Selecione o status...</option>';
 
-          listaStatus.forEach(status => {
+          listaStatus.forEach((status) => {
             const option = document.createElement("option");
             option.value = status;
             option.textContent = status;
@@ -464,6 +472,31 @@
           }
         } catch (erro) {
           console.error("Erro:", erro);
+        }
+      }
+
+      async function atualizarStatusJogo(idJogo, novoStatus) {
+        
+        try {
+          const resposta = await fetch(
+            `http://localhost:8080/jogos/atualizar-status/${idJogo}`,
+            {
+              method: "PUT",
+              headers: {
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify({ statuss: novoStatus }),
+            },
+          );
+
+          if (!resposta.ok) {
+            throw new Error("Erro ao atualizar o status no servidor.");
+          }
+
+          console.log("Status atualizado com sucesso!");
+        } catch (erro) {
+          console.error("Erro na requisição de atualização:", erro);
+          alert("Não foi possível salvar o novo status.");
         }
       }
     </script>

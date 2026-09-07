@@ -361,3 +361,24 @@ main {
     object-fit: cover;
     border-radius: 4px;
 }
+
+.edit-status {
+  background-color: #1a1a1a;
+  color: #ffffff;
+  border: 1px solid #333333;
+  padding: 6px 10px;
+  border-radius: 6px;
+  font-family: 'Poppins', sans-serif;
+  font-size: 12px;
+  outline: none;
+  cursor: pointer;
+  transition: border-color 0.2s;
+}
+
+.edit-status:hover {
+  border-color: #6c5ce7;
+}
+
+.edit-status:focus {
+  border-color: #a29bfe;
+}

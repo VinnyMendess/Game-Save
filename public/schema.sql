@@ -8,15 +8,18 @@ senha varchar(60)
 );
 
 create table bibliotecaJogo (
-idBibliotecaJogo INT PRIMARY KEY,
-titulo VARCHAR(150),
-horasJogadas INT,
-dataConclusao DATE,
-plataforma VARCHAR(45),
-statuss VARCHAR(45),
-nota INT CHECK(nota>= 0 AND nota <= 10),
-midia VARCHAR(45) CONSTRAINT chk_midia CHECK(midia in("Fisíco", "Digital")),
-idUsuario INT,
+idBibliotecaJogo INT PRIMARY KEY AUTO_INCREMENT,
+titulo VARCHAR(150) NOT NULL,
+horasJogadas INT NULL,
+dataConclusao DATE NULL,
+plataforma VARCHAR(45) NULL,
+midia VARCHAR(45) CONSTRAINT chk_midia CHECK(midia in("fisíco", "digital")) NULL,
+statuss VARCHAR(45) NULL,
+nota INT CHECK(nota>= 0 AND nota <= 10) NULL,
+favorito BOOLEAN NULL,
+genero VARCHAR(255) NULL,
+imagem VARCHAR(500) NOT NULL,
+idUsuario INT NOT NULL,
 CONSTRAINT fkUsuario
 FOREIGN KEY (idUsuario)
 REFERENCES usuario(idUsuario)
@@ -27,4 +30,4 @@ REFERENCES usuario(idUsuario)
 INSERT INTO usuario(nameTag, email, senha) VALUES
 ("teste", "teste@t.com", "teste");
 
-SELECT * FROM usuario;
+SELECT * FROM bibliotecajogo;

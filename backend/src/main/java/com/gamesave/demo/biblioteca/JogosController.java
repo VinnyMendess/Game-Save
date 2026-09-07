@@ -120,4 +120,10 @@ public class JogosController {
             return ResponseEntity.status(400).build();
         }
     }
+
+    @GetMapping("/status")
+    public ResponseEntity<List<String>> listarStatus(){
+        List<String> statusList = List.of("Jogando", "Concluído", "Lista de Desejos", "Pausado");
+        return ResponseEntity.status(200).body(statusList);
+    }
 }

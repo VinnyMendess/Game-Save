@@ -169,7 +169,7 @@
       <div class="info-user">
         <div class="card-info-user">
           <p>TOTAL DE JOGOS</p>
-          <div class="count-card-info-user">3</div>
+          <div id="totalJogos" class="count-card-info-user">3</div>
         </div>
         <div class="card-info-user">
           <p>HORAS TOTAIS</p>
@@ -262,25 +262,26 @@
         jogos.forEach((jogo) => {
           const li = document.createElement("li");
 
-         const imagemDropdown = jogo.background_image || "caminho/para/imagem/padrao.jpg";
-          
+          const imagemDropdown =
+            jogo.background_image || "caminho/para/imagem/padrao.jpg";
+
           li.innerHTML = `
                   <img src="${imagemDropdown}" alt="${jogo.name}">
                   <div>
                       <strong>${jogo.name}</strong>
                   </div>
               `;
-              
+
           li.addEventListener("click", () => {
             inputBusca.value = jogo.name;
             idJogoSelecionado = jogo.id;
             listaResultados.style.display = "none";
             console.log(jogo.id);
 
-           imagem = jogo.background_image || "caminho/para/imagem/padrao.jpg";
+            imagem = jogo.background_image || "caminho/para/imagem/padrao.jpg";
             genero = jogo.genero;
           });
-          
+
           listaResultados.appendChild(li);
         });
       }
@@ -315,6 +316,15 @@
           genero: "RPG",
           imagem: imagem,
         };
+
+        if (!titulo) {
+          alert("Preencha o Título");
+          return;
+        }
+        if (nota > 10) {
+          alert("Preencha uma nota entre 0 e 10");
+          return;
+        }
 
         try {
           const resposta = await fetch(
@@ -367,7 +377,7 @@
 
       function renderizarJogos(listaJogos) {
         const containerJogos = document.querySelector(".info-games");
-        containerJogos.innerHTML = ""; 
+        containerJogos.innerHTML = "";
 
         if (listaJogos.length === 0) {
           containerJogos.innerHTML =
@@ -388,8 +398,7 @@
           const card = document.createElement("div");
           card.classList.add("card-info-games");
 
-          
-           const imagemCapa = jogo.imagem || "caminho/para/imagem/padrao.jpg";
+          const imagemCapa = jogo.imagem || "caminho/para/imagem/padrao.jpg";
 
           card.style.backgroundImage = `linear-gradient(to bottom, rgba(0,0,0,0.6), rgba(0,0,0,0.85)), url('${imagemCapa}')`;
           card.style.backgroundSize = "cover";
@@ -414,21 +423,49 @@
           <span>${jogo.horasJogadas || 0}h</span>
         </div>
         <div>
-          <p>CONCLUÍDO</p>
+          <select class="edit-status">
+            <option value="" disabled>Carregando...</option>
+          </select>
           <span>${dataFormatada}</span>
         </div>
       </div>
     `;
 
           containerJogos.appendChild(card);
-          
         });
-        
+        document.querySelectorAll(".edit-status").forEach((select, index) => {
+          carregarSelectStatus(select, listaJogos[index].statuss);
+        });
+      
       }
       document.addEventListener("DOMContentLoaded", () => {
         carregarBiblioteca();
       });
-      
+
+
+      async function carregarSelectStatus(elementoSelect, statusAtual) {
+        try {
+          const resposta = await fetch("http://localhost:8080/jogos/status");
+          if (!resposta.ok) throw new Error("Deu erro ao carregar status");
+
+          const listaStatus = await resposta.json();
+
+          elementoSelect.innerHTML = '<option value="" disabled>Selecione o status...</option>';
+
+          listaStatus.forEach(status => {
+            const option = document.createElement("option");
+            option.value = status;
+            option.textContent = status;
+            elementoSelect.appendChild(option);
+          });
+
+          if (statusAtual) {
+            elementoSelect.value = statusAtual;
+          }
+        } catch (erro) {
+          console.error("Erro:", erro);
+        }
+      }
     </script>
   </body>
 </html>
